@@ -4,28 +4,30 @@ using UnityEngine;
 
 public class PlayerControllerX : MonoBehaviour
 {
-    public startOverScreenX startOverScreenX;
-    int var = 0;
+    public GameObject dogPrefab;
+    private float lastPress;
+    private float startDelay = 0.5f;
 
-    public float speed;
-    public float rotationSpeed;
-    public float verticalInput;
-
-    public void GameOver()
+    // Update is called once per frame
+    void Update()
     {
-        startOverScreenX.Setup(var);
+        // On spacebar press, send dog
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            PressedSpace();
+        }
     }
 
-    void FixedUpdate()
+    void PressedSpace()
     {
-        // get the user's vertical input
-        verticalInput = Input.GetAxis("Vertical");
+        // Check if enough time has passed
+        if (lastPress + startDelay > Time.unscaledTime)
+        {
+            return;
+        }
+        lastPress = Time.unscaledTime;
 
-        // move the plane forward at a constant rate
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
-
-        // tilt the plane up/down based on up/down arrow keys
-        transform.Rotate(Vector3.right * rotationSpeed * verticalInput * Time.deltaTime);
-
+        // spawn dog
+        Instantiate(dogPrefab, transform.position, dogPrefab.transform.rotation);
     }
 }
