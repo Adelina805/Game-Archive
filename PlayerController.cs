@@ -4,34 +4,37 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float horizontalInput;
-    public float speed = 10.0f;
-    public float xRange = 10;
-    public GameObject projectilePrefab;
+    public startOverScreen startOverScreen;
+    int var = 0;
 
+    private float speed = 30.0f;
+    private float turnSpeed = 150.0f;
+    private float horizontalInput;
+    private float verticalInput;
+    public bool vehicleAlive = true;
+
+    public void GameOver()
+    {
+        startOverScreen.Setup(var);
+    }
+    
     void Update()
     {
-        // Get input from player
+        // Receive player input
+        verticalInput = Input.GetAxis("Vertical");
         horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * speed);
 
-        // Left boundary
-        if (transform.position.x < -xRange)
-        {
-            transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
-        }
+        // Move the vehicle forward or back
+        transform.Translate(Vector3.forward * Time.deltaTime * speed * verticalInput);
 
-        // Right boundary
-        if (transform.position.x > xRange)
-        {
-            transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
-        }
+        // Turn the vehicle left or right
+        transform.Rotate(Vector3.up, turnSpeed * horizontalInput * Time.deltaTime);
 
-        // Shoot projectile
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Kill car if goes off track
+        if (transform.position.y < -30)
         {
-            Instantiate(projectilePrefab, transform.position, projectilePrefab.transform.rotation);
-           
+            GameOver();
+            vehicleAlive = false;
         }
     }
 }
